@@ -95,6 +95,29 @@ print(result.meta.warnings)
 
 ---
 
+## Demo en ligne
+
+Une demo publique est hebergee sur Streamlit Community Cloud :
+
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://VOTRE-APP.streamlit.app)
+
+> Remplacez `VOTRE-APP` par l'URL de votre application une fois deployee.
+
+La demo publique impose deux quotas (configurables dans les secrets) :
+
+| Quota | Defaut |
+| --- | --- |
+| Documents par visiteur | 3 |
+| Documents par mois | 50 |
+
+Pour deployer : creer un compte de service Google (role Vertex AI User), creer
+l'app sur [share.streamlit.io](https://share.streamlit.io) en pointant vers
+`app/streamlit_app.py`, puis coller `VERTEX_PROJECT_ID` et
+`GCP_SERVICE_ACCOUNT_JSON` dans **Settings > Secrets**. Les secrets ne sont
+**jamais** commites dans le depot (voir `.streamlit/secrets.toml.example`).
+
+---
+
 ## Qualite
 
 ```bash

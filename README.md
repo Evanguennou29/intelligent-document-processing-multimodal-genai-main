@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Tests](https://img.shields.io/badge/tests-pytest-informational)](tests)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://VOTRE-APP.streamlit.app)
 
 Turn scans, photos and PDFs into **validated, structured JSON** with one
 pipeline that runs either:
@@ -26,6 +27,7 @@ switchable from the web UI, the CLI or a single environment variable.
 - [Project layout](#project-layout)
 - [Requirements](#requirements)
 - [Quickstart](#quickstart)
+- [Online demo](#online-demo)
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Supported documents](#supported-documents)
@@ -260,6 +262,41 @@ pip install -e ".[dev]"
 pytest
 ruff check .
 ```
+
+---
+
+## Online demo
+
+A public demo is hosted on Streamlit Community Cloud:
+
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://VOTRE-APP.streamlit.app)
+
+> Replace `VOTRE-APP` with your deployed application URL.
+
+### Demo limits
+
+To protect your API budget, the public demo enforces two quotas:
+
+| Quota | Default |
+| --- | --- |
+| Documents per visitor | 3 |
+| Documents per month | 50 |
+
+Both are configurable through the application secrets
+(`DEMO_PER_USER_LIMIT`, `DEMO_MONTHLY_LIMIT`).
+
+### Deploying your own demo
+
+1. Create a Google Cloud **service account** with the Vertex AI User role and
+   download its JSON key.
+2. On [share.streamlit.io](https://share.streamlit.io), click **New app**,
+   select this repository and the entry point `app/streamlit_app.py`.
+3. In **Settings > Secrets**, paste the keys from
+   [`.streamlit/secrets.toml.example`](.streamlit/secrets.toml.example) --
+   especially `VERTEX_PROJECT_ID` and `GCP_SERVICE_ACCOUNT_JSON`. Secrets are
+   **never committed** to the repository.
+4. The hosted demo runs on **Vertex AI** (the local Ollama backend is not
+   available in the cloud). Adjust the quota values as you see fit.
 
 ---
 

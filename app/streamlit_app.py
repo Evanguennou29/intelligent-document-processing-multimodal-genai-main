@@ -11,8 +11,10 @@ fresh clone without installing the package first.
 from __future__ import annotations
 
 import csv
+import hashlib
 import io
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -26,6 +28,7 @@ if str(SRC) not in sys.path:
 from idp.config import PROVIDERS, get_settings  # noqa: E402
 from idp.errors import IdpError  # noqa: E402
 from idp.pipeline import Pipeline  # noqa: E402
+from idp.quota import QuotaStore  # noqa: E402
 from idp.schemas import DocumentType  # noqa: E402
 
 ACCEPTED_TYPES = ["png", "jpg", "jpeg", "webp", "tif", "tiff", "pdf"]
@@ -108,6 +111,35 @@ def load_settings():
     return get_settings()
 
 
+def apply_secrets_to_environment() -> None:
+    """Copy Streamlit Cloud secrets into the process environment.
+
+    The settings object reads ``os.getenv``, so exposing ``st.secrets`` as
+    environment variables lets the hosted demo use credentials and quota
+    limits WITHOUT committing them to the repository.
+    """
+    try:
+        secrets = dict(st.secrets)
+    except Exception:  # noqa: BLE001 - secrets are optional
+        secrets = {}
+    for key, value in secrets.items():
+        if isinstance(value, (str, int, float, bool)) and str(key).isupper():
+            os.environ.setdefault(str(key), str(value))
+
+
+def client_identity() -> str:
+    """Best-effort anonymous identity for the per-user quota (the demo has no login)."""
+    try:
+        headers = dict(st.context.headers)
+    except Exception:  # noqa: BLE001 - the API differs across Streamlit versions
+        headers = {}
+    forwarded = headers.get("X-Forwarded-For") or headers.get("X-Real-IP") or ""
+    ip = forwarded.split(",")[0].strip() if forwarded else ""
+    if ip:
+        return "ip-" + hashlib.sha256(ip.encode("utf-8")).hexdigest()[:16]
+    return "session"
+
+
 def save_upload(uploaded_file, doc_type: str | None) -> Path:
     settings = load_settings()
     folder = settings.data_raw_dir / (doc_type or "auto")
@@ -149,6 +181,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+apply_secrets_to_environment()
 settings = load_settings()
 
 # --------------------------------------------------------------------------- #
@@ -187,7 +220,17 @@ with st.sidebar:
         st.error(f"Extraction indisponible\n\n{extractor_health.get('detail')}")
 
     if provider == "vertex" and not settings.vertex_configured():
-        st.warning("Renseignez VERTEX_PROJECT_ID dans votre fichier .env.")
+        st.warning("Renseignez VERTEX_PROJECT_ID dans les secrets de l'application.")
+
+    if settings.demo_quota_enabled:
+        st.divider()
+        st.markdown("### Quota de la demo")
+        try:
+            quota_status = QuotaStore(settings).status(client_identity())
+            st.metric("Essais restants (vous)", quota_status.remaining_user)
+            st.metric("Requetes restantes (mois)", quota_status.remaining_month)
+        except Exception as exc:  # noqa: BLE001 - quota must never crash the demo
+            st.caption(f"Quota indisponible : {exc}")
 
     st.divider()
     with st.expander("Configuration effective"):
@@ -239,6 +282,15 @@ with right:
         st.info("En attente d'un document...")
 
 if run and uploaded_files:
+    # Enforce the hosted-demo quota BEFORE spending any API call.
+    if settings.demo_quota_enabled:
+        quota = QuotaStore(settings)
+        identity = client_identity()
+        allowed, quota_message = quota.try_consume(identity, len(uploaded_files))
+        if not allowed:
+            st.error(quota_message)
+            st.stop()
+
     pipeline = get_pipeline(provider, use_cache)
     health = pipeline.health()
     if not health["ocr"]["ok"]:

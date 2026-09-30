@@ -30,6 +30,11 @@ coverage.xml
 service-account*.json
 credentials.json
 
+# --- Streamlit (secrets locaux) ---------------------------------------------
+# Le vrai fichier de secrets ne doit JAMAIS etre commite ; seul l'exemple l'est.
+.streamlit/*
+!.streamlit/secrets.toml.example
+
 # --- Donnees utilisateur ---------------------------------------------------
 # Les dossiers existent dans le depot, leur contenu reste local.
 data/raw/*

@@ -216,6 +216,7 @@ class LlmExtractor:
             vertexai.init(
                 project=self.settings.vertex_project_id,
                 location=self.settings.vertex_location,
+                credentials=self.settings.vertex_credentials(),
             )
             self._model = GenerativeModel(self.settings.vertex_model)
 

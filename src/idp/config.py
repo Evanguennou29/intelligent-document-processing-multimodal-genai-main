@@ -74,6 +74,9 @@ class Settings:
     vertex_project_id: str = ""
     vertex_location: str = "us-central1"
     vertex_model: str = "gemini-2.5-pro"
+    # Contenu brut du fichier JSON de compte de service (fourni via les secrets
+    # de Streamlit Cloud). Ne JAMAIS le committer dans le depot.
+    gcp_service_account_json: str = ""
 
     # -- Local Ollama ---------------------------------------------------------
     ollama_host: str = "http://localhost:11434"
@@ -98,6 +101,13 @@ class Settings:
     pdf_max_pages: int = 1
     pdf_dpi: int = 200
 
+    # -- Hosted demo quotas ---------------------------------------------------
+    # Active uniquement quand DEMO_QUOTA_ENABLED=true (secrets du cloud).
+    demo_quota_enabled: bool = False
+    demo_per_user_limit: int = 3
+    demo_monthly_limit: int = 50
+    demo_quota_path: Path = PROJECT_ROOT / ".cache" / "idp" / "demo-quota.json"
+
     # ------------------------------------------------------------------ API --
     @classmethod
     def from_env(cls) -> "Settings":
@@ -112,6 +122,7 @@ class Settings:
             vertex_project_id=_raw("VERTEX_PROJECT_ID"),
             vertex_location=_raw("VERTEX_LOCATION", "us-central1"),
             vertex_model=_raw("VERTEX_MODEL", "gemini-2.5-pro"),
+            gcp_service_account_json=_raw("GCP_SERVICE_ACCOUNT_JSON"),
             ollama_host=_raw("OLLAMA_HOST", "http://localhost:11434"),
             ollama_vision_model=_raw("OLLAMA_VISION_MODEL", "llama3.2-vision"),
             ollama_text_model=_raw("OLLAMA_TEXT_MODEL", "llama3.2"),
@@ -127,6 +138,12 @@ class Settings:
             max_upload_mb=_int("IDP_MAX_UPLOAD_MB", 25),
             pdf_max_pages=max(1, _int("IDP_PDF_MAX_PAGES", 1)),
             pdf_dpi=max(72, _int("IDP_PDF_DPI", 200)),
+            demo_quota_enabled=_bool("DEMO_QUOTA_ENABLED", False),
+            demo_per_user_limit=max(1, _int("DEMO_PER_USER_LIMIT", 3)),
+            demo_monthly_limit=max(1, _int("DEMO_MONTHLY_LIMIT", 50)),
+            demo_quota_path=_path(
+                "DEMO_QUOTA_PATH", PROJECT_ROOT / ".cache" / "idp" / "demo-quota.json"
+            ),
         )
         return settings
 
@@ -135,6 +152,22 @@ class Settings:
         """True when a real project id was provided (and not a placeholder)."""
         project = self.vertex_project_id.strip()
         return bool(project) and project not in {"your_id_project", "your-project-id", "CHANGEME"}
+
+    def vertex_credentials(self):
+        """Build GCP credentials from a service-account JSON secret.
+
+        Returns ``None`` when no secret is provided, in which case the Vertex
+        SDK falls back to Application Default Credentials (local development).
+        """
+        raw = self.gcp_service_account_json.strip()
+        if not raw:
+            return None
+
+        import json
+
+        from google.oauth2 import service_account
+
+        return service_account.Credentials.from_service_account_info(json.loads(raw))
 
     def describe(self) -> dict[str, str]:
         """Human-readable summary. Never leaks a secret because none is stored."""
@@ -151,6 +184,9 @@ class Settings:
             "data_raw_dir": str(self.data_raw_dir),
             "data_processed_dir": str(self.data_processed_dir),
             "log_level": self.log_level,
+            "demo_quota_enabled": str(self.demo_quota_enabled),
+            "demo_per_user_limit": str(self.demo_per_user_limit),
+            "demo_monthly_limit": str(self.demo_monthly_limit),
         }
 
     def ensure_directories(self) -> None:
