@@ -1,0 +1,10 @@
+# Mode cloud uniquement (Google Vertex AI).
+# Equivalent a :  pip install -e ".[vertex,app,pdf]"
+pydantic>=2.5
+python-dotenv>=1.0
+pillow>=10.0
+streamlit>=1.31
+pymupdf>=1.24
+google-cloud-aiplatform>=1.38
+google-generativeai>=0.5
+google-cloud-vision>=3.5

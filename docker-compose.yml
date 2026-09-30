@@ -1,0 +1,37 @@
+services:
+  app:
+    build: .
+    container_name: idp-app
+    ports:
+      - "8501:8501"
+    environment:
+      IDP_PROVIDER: ${IDP_PROVIDER:-ollama}
+      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_VISION_MODEL: ${OLLAMA_VISION_MODEL:-llama3.2-vision}
+      OLLAMA_TEXT_MODEL: ${OLLAMA_TEXT_MODEL:-llama3.2}
+      VERTEX_PROJECT_ID: ${VERTEX_PROJECT_ID:-}
+      VERTEX_LOCATION: ${VERTEX_LOCATION:-us-central1}
+      IDP_PDF_MAX_PAGES: ${IDP_PDF_MAX_PAGES:-1}
+    volumes:
+      - ./data:/app/data
+      - ./.cache:/app/.cache
+      # Pour utiliser Vertex AI depuis le conteneur, montez vos credentials :
+      # - ${HOME}/.config/gcloud:/root/.config/gcloud:ro
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: idp-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    restart: unless-stopped
+    # Premier demarrage, en local :
+    #   docker compose exec ollama ollama pull llama3.2-vision
+    #   docker compose exec ollama ollama pull llama3.2
+
+volumes:
+  ollama-models:

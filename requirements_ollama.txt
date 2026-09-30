@@ -1,0 +1,8 @@
+# Mode local uniquement (Ollama, 100 % hors ligne).
+# Equivalent a :  pip install -e ".[ollama,app,pdf]"
+pydantic>=2.5
+python-dotenv>=1.0
+pillow>=10.0
+streamlit>=1.31
+ollama>=0.2
+pymupdf>=1.24

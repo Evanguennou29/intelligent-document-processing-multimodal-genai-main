@@ -1,0 +1,50 @@
+# --- Python ----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+
+# --- Tests / lint ----------------------------------------------------------
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# --- Secrets ---------------------------------------------------------------
+# Ne commitez jamais vos identifiants.
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+service-account*.json
+credentials.json
+
+# --- Donnees utilisateur ---------------------------------------------------
+# Les dossiers existent dans le depot, leur contenu reste local.
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+.cache/
+*.log
+
+# --- Editeurs / OS ---------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Notebooks -------------------------------------------------------------
+.ipynb_checkpoints/
