@@ -275,7 +275,7 @@ if run and uploaded_files:
     if results:
         st.success(f"{len(results)} document(s) traite(s) avec succes.")
         tabs = st.tabs([label for label, _ in results])
-        for tab, (label, payload) in zip(tabs, results):
+        for tab, (label, payload) in zip(tabs, results, strict=True):
             with tab:
                 meta = payload.get("_meta", {})
                 warnings = meta.get("warnings") or []

@@ -72,4 +72,4 @@ exclude = [".venv", "build", "dist", "notebooks"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP"]
-ignore = ["E501"]
+ignore = ["E501", "UP037"]
