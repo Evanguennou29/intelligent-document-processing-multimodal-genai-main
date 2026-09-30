@@ -36,7 +36,6 @@ switchable from the web UI, the CLI or a single environment variable.
 - [Troubleshooting](#troubleshooting)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
-- [License and credits](#license-and-credits)
 
 ---
 
@@ -481,14 +480,3 @@ Issues and pull requests are welcome. Please read
 
 For a security issue, please follow [SECURITY.md](SECURITY.md) instead of
 opening a public issue.
-
----
-
-## License and credits
-
-Released under the [MIT License](LICENSE).
-
-This project is a refactor of the educational repository
-[`lucieadc/intelligent-document-processing-multimodal-genai`](https://github.com/lucieadc/intelligent-document-processing-multimodal-genai).
-The original idea, the hybrid cloud/local concept and the evaluation notebook
-come from that work; thanks to its author.

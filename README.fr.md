@@ -125,13 +125,3 @@ pip install -e ".[dev]"
 pytest -q
 ruff check .
 ```
-
----
-
-## Licence
-
-MIT -- voir [LICENSE](LICENSE).
-
-Projet derive du depot pedagogique
-[`lucieadc/intelligent-document-processing-multimodal-genai`](https://github.com/lucieadc/intelligent-document-processing-multimodal-genai).
-Merci a son autrice pour l'idee d'origine et le notebook d'evaluation.
