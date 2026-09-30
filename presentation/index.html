@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090b18">
+  <meta name="description" content="Explorez le pipeline Intelligent Document Processing : lecture de documents, extraction structurée et validation JSON avec Vertex AI ou Ollama.">
+  <title>IDP Atelier</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="#explorer" aria-label="IDP Atelier, retour à l'interface"><span class="brand-mark">IDP</span><span class="brand-name">ATELIER</span></a>
+    <nav aria-label="Navigation principale"><a href="#explorer">Explorer</a><a href="#pipeline">Pipeline</a><a href="#capacites">Capacités</a><a class="nav-github" href="https://github.com/Evanguennou29/intelligent-document-processing-multimodal-genai-main" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a></nav>
+  </header>
+
+  <main>
+    <section class="lab" id="explorer" aria-labelledby="lab-title">
+      <div class="workbench" aria-label="Visualisation interactive du traitement documentaire">
+        <div class="bench-head"><h1 class="bench-heading" id="lab-title">IDP ATELIER</h1><div class="bench-state"><span id="benchStatus" aria-live="polite">PRÊT À EXPLORER</span></div></div>
+        <div class="bench-grid">
+          <aside class="source-pane" aria-label="Choix du document et du moteur">
+            <div class="pane-label"><span>SOURCE</span><span>DOCUMENTS</span></div>
+            <div class="source-title">Choisir une pièce</div>
+            <div class="doc-list" id="docList" role="group" aria-label="Exemples de documents">
+              <button class="doc-choice active" type="button" data-doc="invoice" aria-pressed="true"><span class="doc-icon">▤</span><span><strong>Facture</strong><small>invoice / PDF</small></span></button>
+              <button class="doc-choice" type="button" data-doc="passport" aria-pressed="false"><span class="doc-icon">◫</span><span><strong>Passeport</strong><small>passport / JPEG</small></span></button>
+              <button class="doc-choice" type="button" data-doc="prescription" aria-pressed="false"><span class="doc-icon">✳</span><span><strong>Ordonnance</strong><small>prescription / PNG</small></span></button>
+              <button class="doc-choice" type="button" data-doc="certificate" aria-pressed="false"><span class="doc-icon">◇</span><span><strong>Certificat</strong><small>certificate / PDF</small></span></button>
+            </div>
+            <div class="engine-control"><span class="micro-label">MOTEUR IA</span><div class="segmented" role="group" aria-label="Moteur IA"><button class="engine active" data-engine="vertex" type="button" aria-pressed="true">Vertex AI</button><button class="engine" data-engine="ollama" type="button" aria-pressed="false">Ollama</button></div><p id="engineCaption">Cloud · Gemini Vision</p></div>
+          </aside>
+
+          <div class="scan-pane">
+            <div class="pane-label"><span>VISION</span><span id="scanCounter">LECTURE OCR</span></div>
+            <div class="scanner-stage" id="scannerStage">
+              <div class="crosshair crosshair-tl"></div><div class="crosshair crosshair-tr"></div><div class="crosshair crosshair-bl"></div><div class="crosshair crosshair-br"></div>
+              <div class="scan-orbit scan-orbit-one"></div><div class="scan-orbit scan-orbit-two"></div>
+              <div class="document-tilt" id="documentTilt"><div class="scan-beam"></div><div class="paper" id="paper" aria-label="Aperçu du document fictif"></div></div>
+              <div class="scan-coordinate">X: 0142 <span>Y: 0876</span></div><div class="scan-tag" id="scanTag">FACTURE / PDF</div>
+            </div>
+            <div class="scan-footer"><span class="signal-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span id="scanMessage">EN ATTENTE DE SÉQUENCE</span><span>300 DPI</span></div>
+          </div>
+
+          <div class="output-pane">
+            <div class="pane-label"><span>STRUCTURE</span><span>DONNÉES</span></div>
+            <div class="output-top"><div><span class="output-kicker">DOCUMENT RECONNU</span><h2 id="resultTitle">Facture</h2></div><div class="check-seal" aria-label="Validation disponible">✓</div></div>
+            <div class="field-grid" id="fieldGrid"></div>
+            <div class="code-head"><span>JSON / VALIDÉ</span><span class="code-controls"><i></i><i></i><i></i></span></div>
+            <pre class="code-window"><code id="jsonOutput"></code></pre>
+            <div class="output-foot"><span><i class="verified-dot"></i> SCHÉMA PYDANTIC</span><span id="warningLabel">0 AVERTISSEMENT</span></div>
+          </div>
+        </div>
+        <div class="bench-bottom"><div class="sequence-controls"><button id="runButton" class="run-button" type="button"><span class="play-symbol" aria-hidden="true">▶</span><span id="runLabel">LANCER LA SÉQUENCE</span></button><button id="resetButton" class="reset-button" type="button" aria-label="Réinitialiser la séquence">↺</button></div><div class="sequence-track"><div class="stage-labels" id="stageLabels"><span>IMPORT</span><span>OCR</span><span>ROUTAGE</span><span>EXTRACTION</span><span>VALIDATION</span></div></div><span class="demo-note">DONNÉES FICTIVES</span></div>
+      </div>
+    </section>
+    <section class="pipeline-section reveal" id="pipeline" aria-labelledby="pipeline-title"><div class="pipeline-heading"><h2 id="pipeline-title">À L'INTÉRIEUR<br>DU PIPELINE</h2><p>Le même parcours traite le fichier de bout en bout. Le moteur se choisit selon le contexte : infrastructure cloud ou traitement local.</p></div><div class="flow-diagram" aria-label="PDF et images vers OCR, routage, extraction, validation et JSON"><div class="flow-input"><span class="flow-code">SOURCE</span><strong>PDF<br>IMAGE<br>SCAN</strong><span>PNG · JPG · WEBP · TIFF · PDF</span></div><div class="flow-line"><i></i><i></i><i></i></div><div class="flow-core"><span class="core-ring ring-one"></span><span class="core-ring ring-two"></span><div class="core-inner"><span>O C R</span><b>+</b><span>G E N A I</span></div><small>ROUTAGE AUTOMATIQUE</small></div><div class="flow-line"><i></i><i></i><i></i></div><div class="flow-output"><span class="flow-code">RÉSULTAT</span><strong>{<br>&nbsp;"data": ...<br>}</strong><span>JSON STRUCTURÉ + MÉTADONNÉES</span></div></div><div class="provider-rail"><div><span class="provider-ordinal">CLOUD</span><strong>Google Vertex AI</strong><small>Gemini Vision · extraction cloud</small></div><span class="rail-divider">OU</span><div><span class="provider-ordinal">LOCAL</span><strong>Ollama</strong><small>Modèle de vision · exécution locale</small></div></div></section>
+
+    <section class="capabilities-section reveal" id="capacites" aria-labelledby="capabilities-title"><div class="capabilities-heading"><h2 id="capabilities-title">CE QUE LE SYSTÈME<br>SAIT LIRE</h2><p>Chaque famille de document possède ses champs, ses règles et sa provenance.</p></div><div class="capability-layout"><div class="capability-highlight"><div class="highlight-top"><span>EXEMPLE / FACTURE</span><span>VALIDATION</span></div><div class="highlight-visual"><div class="floating-line line-a">invoice_number <b>→</b> "INV-2026-042"</div><div class="floating-line line-b">total_amount <b>→</b> 624.00</div><div class="floating-line line-c">currency <b>→</b> "EUR"</div><div class="highlight-frame"><span>✓</span><strong>DONNÉES<br>VÉRIFIÉES</strong></div></div><div class="highlight-bottom"><strong>Validation qui a du sens</strong><span>Dates normalisées, cohérence des montants, expiration des pièces et avertissements exploitables.</span></div></div><div class="capability-list"><div class="cap-row"><strong>6 familles</strong><p>Facture, carte d'identité, passeport, ordonnance, formulaire et certificat.</p><i>↗</i></div><div class="cap-row"><strong>PDF multipage</strong><p>Rasterisation et traitement page par page, avec provenance de chaque résultat.</p><i>↗</i></div><div class="cap-row"><strong>Traçabilité</strong><p>Moteur, modèle, fichier source, durée, cache et avertissements dans les métadonnées.</p><i>↗</i></div><div class="cap-row"><strong>Formats utiles</strong><p>JSON téléchargeable et lignes de facture exportables en CSV depuis l'application.</p><i>↗</i></div></div></div></section>
+
+    <section class="final-section reveal"><div class="final-content"><h2>LE PROJET<br>EN DÉTAIL</h2><div class="final-actions"><a class="repo-button" href="https://github.com/Evanguennou29/intelligent-document-processing-multimodal-genai-main" target="_blank" rel="noopener noreferrer">VOIR LE CODE SUR GITHUB <span aria-hidden="true">↗</span></a><p>Pipeline Python · interface Streamlit · tests hors ligne · Docker</p></div></div><footer><span>© 2026 IDP ATELIER</span><span>INTELLIGENT DOCUMENT PROCESSING</span><a href="#explorer">RETOUR EN HAUT ↑</a></footer></section>
+  </main>
+  <script src="app.js" defer></script>
+</body>
+</html>

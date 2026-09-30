@@ -1,5 +1,9 @@
 # Intelligent Document Processing - Multimodal GenAI
 
+## Présentation interactive
+
+La [présentation web](presentation/index.html) explore visuellement le pipeline et ses résultats sur des exemples fictifs, sans consommer d'API. Pour la publier sur GitHub Pages, consultez [PUSH_GITHUB.fr.md](PUSH_GITHUB.fr.md).
+
 [![CI](https://github.com/Evanguennou29/intelligent-document-processing-multimodal-genai-main/actions/workflows/ci.yml/badge.svg)](https://github.com/Evanguennou29/intelligent-document-processing-multimodal-genai-main/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
